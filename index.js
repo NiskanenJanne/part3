@@ -30,7 +30,9 @@ const errorHandler = (error, request, response, next) => {
     if (error.name === 'CastError') {
       return response.status(400).send({ error: 'malformatted id' })
     }
-  
+    else if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
+    }
     next(error)
 }
 
@@ -61,9 +63,22 @@ app.delete('/api/persons/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     
     const body = request.body
+    const person = new Person({
+        name: body.name,
+        number: body.number
+    })
+    person.save()
+        .then(savedperson => {
+        console.log("added " + body.name + " number " + body.number + " to phonebook")
+            response.json(savedperson)
+        })
+        .catch(error => next(error))
+})            
+      
+    /*
     var n = 0
     
     for (i = 0; i < puhelinluettelo.length; i++) {
@@ -82,34 +97,27 @@ app.post('/api/persons', (request, response) => {
             error: 'name missing' 
         })
     }
-    if (!body.number) {
+    if (body.number === undefined) {
         n = 1
         return response.status(400).json({ 
             error: 'number missing' 
         })
     }
     if (n === 0) {
-        const person = new Person({
-            name: body.name,
-            number: body.number
+        
         })
-        person.save().then(response => {
-            console.log("added " + body.name + " number " + body.number + " to phonebook")
-            
-        })
-        puhelinluettelo = puhelinluettelo.concat(person)
-        response.json(person)
+        
         
     }
     
-    /*
+    
     {
         const person = {
         id: generateId(),
         name: body.name,
         number: body.number   
     }*/
-})
+
   
 app.get('/api/persons', (request, response) => {
     Person.find({}).then(person => {
