@@ -37,9 +37,7 @@ const errorHandler = (error, request, response, next) => {
 app.get('/info', (request, response) => {
     const date_ob = new Date();
     console.log(date_ob, "hrt");
-    const people = puhelinluettelo.length
-    console.log(people)
-    response.send(`Phonebook has info for ${people} people.<br></br> ${date_ob}`)
+    response.send(`Phonebook has info for people.<br></br> ${date_ob}`)
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
@@ -127,7 +125,7 @@ app.put('/api/persons/:id', (request, response, next) => {
         number: body.number
     }
 
-    Person.findByIdAndUpdate(request.params.id, person, { neew:true})
+    Person.findByIdAndUpdate(request.params.id, person, { new: true})
         .then(updatedperson => {
             response.json(updatedperson)
         })
